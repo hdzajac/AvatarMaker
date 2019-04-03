@@ -84,6 +84,7 @@ class TrainerController(object):
         """
         for brain_name in self.trainers.keys():
             self.trainers[brain_name].save_model()
+            # todo change this shit
             file = open("../../../tmp", "a+")
             file.write("\n%f" % self.trainers[brain_name].stats['Environment/Cumulative Reward'][0])
             file.close()

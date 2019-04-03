@@ -1,25 +1,20 @@
 # # Unity ML-Agents Toolkit
 
+from typing import Optional
+
+import yaml
 import logging
 
-from multiprocessing import Process, Queue
-import os
-import glob
-import shutil
-import numpy as np
-import yaml
-from docopt import docopt
-from typing import Optional
-from mlagents.trainers.anha.controller import Controller
-
-
-from mlagents.trainers.trainer_controller import TrainerController
-from mlagents.trainers.exception import TrainerError
-from mlagents.trainers import MetaCurriculumError, MetaCurriculum
 from mlagents.envs import UnityEnvironment
 from mlagents.envs.exception import UnityEnvironmentException
+from mlagents.trainers import MetaCurriculumError, MetaCurriculum
+from mlagents.trainers.trainer_controller import TrainerController
+
 
 class SingleRun:
+    def __init__(self):
+        self.logger = logging.getLogger("anha")
+
     def run_training(self, sub_id: int, run_seed: int, run_options, process_queue):
         """
         Launches training session.
@@ -41,7 +36,6 @@ class SingleRun:
         curriculum_folder = (run_options['--curriculum']
                              if run_options['--curriculum'] != 'None' else None)
         lesson = int(run_options['--lesson'])
-        fast_simulation = not bool(run_options['--slow'])
         no_graphics = run_options['--no-graphics']
         trainer_config_path = run_options['<trainer-config-path>']
 
@@ -49,7 +43,10 @@ class SingleRun:
         summaries_dir = './summaries'
 
         trainer_config = self.load_config(trainer_config_path)
-        env = self.init_environment(env_path, no_graphics, worker_id + sub_id, fast_simulation, run_seed)
+        env = self.init_environment(env_path, no_graphics, worker_id + sub_id, run_seed)
+
+        self.logger.info("Initialised Environment [" + run_id + "]")
+
         maybe_meta_curriculum = self.try_create_meta_curriculum(curriculum_folder, env)
 
         external_brains = {}
@@ -68,8 +65,8 @@ class SingleRun:
         # Begin training
         tc.start_learning(env, trainer_config)
 
-
-    def try_create_meta_curriculum(self, curriculum_folder: Optional[str], env: UnityEnvironment) -> Optional[MetaCurriculum]:
+    @staticmethod
+    def try_create_meta_curriculum(curriculum_folder: Optional[str], env: UnityEnvironment) -> Optional[MetaCurriculum]:
         if curriculum_folder is None:
             return None
         else:
@@ -80,14 +77,15 @@ class SingleRun:
                         raise MetaCurriculumError('One of the curricula '
                                                   'defined in ' +
                                                   curriculum_folder + ' '
-                                                  'does not have a corresponding '
-                                                  'Brain. Check that the '
-                                                  'curriculum file has the same '
-                                                  'name as the Brain '
-                                                  'whose curriculum it defines.')
+                                                                      'does not have a corresponding '
+                                                                      'Brain. Check that the '
+                                                                      'curriculum file has the same '
+                                                                      'name as the Brain '
+                                                                      'whose curriculum it defines.')
             return meta_curriculum
 
-    def load_config(self, trainer_config_path):
+    @staticmethod
+    def load_config(trainer_config_path):
         try:
             with open(trainer_config_path) as data_file:
                 trainer_config = yaml.load(data_file)
@@ -101,8 +99,8 @@ class SingleRun:
                                             'Trainer Config from this path : {}'
                                             .format(trainer_config_path))
 
-
-    def init_environment(self, env_path, no_graphics, worker_id, fast_simulation, seed):
+    @staticmethod
+    def init_environment(env_path, no_graphics, worker_id, seed):
         if env_path is not None:
             # Strip out executable extensions if passed
             env_path = (env_path.strip()

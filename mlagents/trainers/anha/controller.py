@@ -2,30 +2,44 @@ import logging
 
 
 # todo: Think of multiple runs at once
+import yaml
+
+from mlagents.envs import UnityEnvironmentException
+
+
 class Controller:
     def __init__(self, run_options):
         self.options = run_options
         self.logger = logging.getLogger("anha")
+
+        if run_options["<main-config-path>"] == 'None':
+            self.logger.error("Not received path to global config file")
+            raise Exception()
+
+        config_path = run_options["<main-config-path>"]
+
+        try:
+            with open(config_path) as data_file:
+                self.trainer_config = yaml.load(data_file)
+        except IOError:
+            raise UnityEnvironmentException('Parameter file could not be found '
+                                            'at {}.'
+                                            .format(config_path))
+        except UnicodeDecodeError:
+            raise UnityEnvironmentException('There was an error decoding '
+                                            'Global Config from this path : {}'
+                                            .format(config_path))
+
         return
 
-    # todo accept only with environment - no unity learning :c
-    # if options['--env'] == 'None' and num_runs > 1:
-    #     raise TrainerError('It is not possible to launch more than one concurrent training session '
-    #                        'when training from the editor.')
-
-
+    # use random seed 0 - 10 000
     def start(self):
         options = self.options
-        num_runs = int(options['--num-runs'])
-        seed = int(options['--seed'])
         jobs = []
-        run_seed = seed
+        run_seed =
 
-        if num_runs == 1:
-            if seed == -1:
-                run_seed = np.random.randint(0, 10000)
-            run_training(0, run_seed, options, Queue())
-        else:
+
+
             for i in range(num_runs):
                 if seed == -1:
                     run_seed = np.random.randint(0, 10000)
