@@ -4,8 +4,9 @@
 
 import os
 import logging
-import shutil
 import sys
+from multiprocessing.connection import Connection
+
 if sys.platform.startswith('win'):
     import win32api
     import win32con
@@ -26,7 +27,7 @@ class TrainerController(object):
     def __init__(self, model_path: str, summaries_dir: str,
                  run_id: str, save_freq: int, meta_curriculum: Optional[MetaCurriculum],
                  load: bool, train: bool, keep_checkpoints: int, lesson: Optional[int],
-                 external_brains: Dict[str, BrainInfo], training_seed: int):
+                 external_brains: Dict[str, BrainInfo], training_seed: int, dispatcher_pipe: Connection):
         """
         :param model_path: Path to save the model.
         :param summaries_dir: Folder to save training summaries.
@@ -39,6 +40,7 @@ class TrainerController(object):
         :param lesson: Start learning from this lesson.
         :param external_brains: dictionary of external brain names to BrainInfo objects.
         :param training_seed: Seed to use for Numpy and Tensorflow random number generation.
+        :param dispatcher_pipe: Pipe to send the results to
         """
 
         self.model_path = model_path
@@ -56,6 +58,7 @@ class TrainerController(object):
         self.global_step = 0
         self.meta_curriculum = meta_curriculum
         self.seed = training_seed
+        self.dispatcher_pipe = dispatcher_pipe
         np.random.seed(self.seed)
         tf.set_random_seed(self.seed)
 
@@ -84,10 +87,9 @@ class TrainerController(object):
         """
         for brain_name in self.trainers.keys():
             self.trainers[brain_name].save_model()
-            # todo change this shit
-            file = open("../../../tmp", "a+")
-            file.write("\n%f" % self.trainers[brain_name].stats['Environment/Cumulative Reward'][0])
-            file.close()
+            # self.dispatcher_pipe.send(self.trainers[brain_name].stats['Environment/Cumulative Reward'][0])
+            # todo: change to get the last one?
+            self.dispatcher_pipe.send(self.trainers[brain_name].stats['Environment/Cumulative Reward'])
 
         self.logger.info('Saved Model')
 
