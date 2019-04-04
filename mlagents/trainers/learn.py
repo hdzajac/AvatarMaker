@@ -11,7 +11,7 @@ from mlagents.trainers import MetaCurriculumError, MetaCurriculum
 from mlagents.trainers.trainer_controller import TrainerController
 
 
-class SingleRun:
+class TrainingExecutor:
     def __init__(self):
         self.logger = logging.getLogger("anha")
 

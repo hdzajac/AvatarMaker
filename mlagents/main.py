@@ -1,7 +1,7 @@
 import logging
 
 from docopt import docopt
-from mlagents.trainers.anha.controller import Controller
+from mlagents.trainers.anha.dispatcher import Dispatcher
 import time
 
 
@@ -29,23 +29,23 @@ def main():
 
     error_handler = logging.FileHandler("../logs/" + time.strftime("%Y%m%d") + "-ERROR.log")
     error_handler.setLevel(logging.ERROR)
-    error_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(funcname)s - %(message)s'))
+    error_handler.setFormatter(logging.Formatter('%(asctime)s - %(filename)s - %(funcName)s - %(message)s'))
 
     debug_handler = logging.FileHandler("../logs/" + time.strftime("%Y%m%d") + "-DEBUG.log")
     debug_handler.setLevel(logging.DEBUG)
-    debug_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(funcname)s - %(message)s'))
+    debug_handler.setFormatter(logging.Formatter('%(asctime)s - %(filename)s - %(funcName)s - %(message)s'))
 
     info_handler = logging.FileHandler("../logs/" + time.strftime("%Y%m%d") + "-INFO.log")
     info_handler.setLevel(logging.INFO)
-    info_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(funcname)s - %(message)s'))
+    info_handler.setFormatter(logging.Formatter('%(asctime)s - %(filename)s - %(funcName)s - %(message)s'))
 
     logger.addHandler(error_handler)
     logger.addHandler(debug_handler)
     logger.addHandler(info_handler)
 
     options = docopt(_USAGE)
-    controller = Controller(options)
-    controller.start()
+    dispatcher = Dispatcher(options)
+    dispatcher.start()
 
 
 main()
