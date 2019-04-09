@@ -1,5 +1,6 @@
 import logging
 import numpy as np
+import json
 
 
 class Thinker:
@@ -19,10 +20,19 @@ class Thinker:
 
     # todo Come up with new specification based on the definition and previous iterations
     def get_specification(self):
-        return {"random parameter": np.random.randint(0, 100)}
+        return {
+            "random_parameter": np.random.randint(0, 100),
+            "arm_scale": np.random.random() * 1.5 + 0.5
+        }
+
+    # write the specification for the next training step in a file that will be red by the academy and used
+    def write_specification(self, specification_definition):
+        with open("specification.json", "w") as outfile:
+            json.dump(specification_definition, outfile)
 
     def finish(self):
         # todo change this shit
         file = open("tmp", "a+")
         file.write(str(self.lessons))
         file.close()
+

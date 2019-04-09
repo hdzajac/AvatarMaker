@@ -46,6 +46,7 @@ class Dispatcher:
         for j in range(max_runs):
             for i in range(concurrent_runs):
                 specification = self.thinker.get_specification()
+                self.thinker.write_specification(specification)
                 receiver, sender = Pipe()
                 # todo: do something with the specification
                 run_seed = np.random.randint(0, 10000)
