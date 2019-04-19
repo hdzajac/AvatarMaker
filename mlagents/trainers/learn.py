@@ -49,8 +49,10 @@ def run_training(sub_id: int, run_seed: int, run_options, dispatcher_pipe):
     for brain_name in env.external_brain_names:
         external_brains[brain_name] = env.brains[brain_name]
 
+    newRunId = run_id + '-' + str(sub_id)
+    newModelPath = model_path + '-' + str(sub_id)
     # Create controller and begin training.
-    tc = TrainerController(model_path, summaries_dir, run_id + '-' + str(sub_id),
+    tc = TrainerController(newModelPath, summaries_dir, newRunId,
                            save_freq, maybe_meta_curriculum,
                            load_model, train_model,
                            keep_checkpoints, lesson, external_brains, run_seed, dispatcher_pipe)

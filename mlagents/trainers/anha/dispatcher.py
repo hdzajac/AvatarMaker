@@ -45,12 +45,12 @@ class Dispatcher:
         # todo save the state every now and them -> in thinker
         for j in range(max_runs):
             for i in range(concurrent_runs):
-                specification = self.thinker.get_specification()
+                specification = self.thinker.get_specification(j)
                 self.thinker.write_specification(specification)
                 receiver, sender = Pipe()
                 # todo: do something with the specification
                 run_seed = np.random.randint(0, 10000)
-                p = Process(target=run_training, args=(i, run_seed, self.options, sender))
+                p = Process(target=run_training, args=(j, run_seed, self.options, sender))
                 self.training_instances[i] = {"specification": specification, "receiver": receiver, "process": p}
                 p.start()
                 # Wait for signal that environment has successfully launched
@@ -67,7 +67,7 @@ class Dispatcher:
                 self.logger.info("Received results from {}, run: {}".format(i, j))
                 self.logger.debug("Received results from {}, run: {}\nParameters: \n{}".format(i, j, str(results)))
 
-                self.thinker.add_result(specification, results)
+                self.thinker.add_result(specification, results, j)
                 training["process"].join()
         self.thinker.finish()
 

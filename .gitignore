@@ -1,6 +1,6 @@
 .idea
 logs
-*pycache
+*.pyc
 *.log
 games/
 

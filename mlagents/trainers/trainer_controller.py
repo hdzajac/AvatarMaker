@@ -89,7 +89,8 @@ class TrainerController(object):
             self.trainers[brain_name].save_model()
             # self.dispatcher_pipe.send(self.trainers[brain_name].stats['Environment/Cumulative Reward'][0])
             # todo: change to get the last one?
-            self.dispatcher_pipe.send(self.trainers[brain_name].stats['Environment/Cumulative Reward'])
+            mean_reward = np.mean(self.trainers[brain_name].stats['Environment/Cumulative Reward'])
+            self.dispatcher_pipe.send(mean_reward)
 
         self.logger.info('Saved Model')
 

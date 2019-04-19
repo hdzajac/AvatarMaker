@@ -1,1 +1,2 @@
-{"random_parameter": 73, "arm_scale": 1.0410043106368658}
+{"LeftArm": {"Name": "LeftArm", "ScaleX": 1, "ScaleY": 1, "ScaleZ": 1, "LowTwistLimit": -20, "HighTwistLimit": 70, "SwingLimit1": 40, "SwingLimit2": 40},
+ "RightArm":{"Name": "RightArm", "ScaleX": 1, "ScaleY": 1, "ScaleZ": 1, "LowTwistLimit": -20, "HighTwistLimit": 70, "SwingLimit1": 40, "SwingLimit2": 40}}
